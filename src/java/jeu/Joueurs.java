@@ -5,10 +5,16 @@
  */
 package jeu;
 
+import java.util.ArrayList;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+
 /**
  *
  * @author Flo
  */
+@XmlRootElement(name = "Joueurs")
 public class Joueurs {
-    
+   @XmlElement
+    public ArrayList<Joueur> liste = new ArrayList<Joueur>(); 
 }

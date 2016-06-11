@@ -22,6 +22,15 @@ public class Joueur {
         this.pseudo = pseudo;
         this.password = password;
         this.connecte = true;
+        this.score = 0;
+    }
+
+    public int getScore() {
+        return score;
+    }
+
+    public void setScore(int score) {
+        this.score = score;
     }
 
     
