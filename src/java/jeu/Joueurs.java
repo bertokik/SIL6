@@ -7,7 +7,7 @@ package jeu;
 
 /**
  *
- * @author Kik
+ * @author Flo
  */
 public class Joueurs {
     
