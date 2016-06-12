@@ -13,6 +13,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PUT;
 import javax.ws.rs.core.MediaType;
+import javax.xml.bind.JAXBElement;
 
 /**
  * REST Web Service
@@ -21,33 +22,28 @@ import javax.ws.rs.core.MediaType;
  */
 @Path("/")
 public class ServiceJeu {
-
-    @Context
-    private UriInfo context;
-
-    /**
-     * Creates a new instance of ServiceJeu
-     */
-    public ServiceJeu() {
-    }
-
-    /**
-     * Retrieves representation of an instance of jeu.ServiceJeu
-     * @return an instance of java.lang.String
-     */
-    @GET
-    @Produces(MediaType.APPLICATION_XML)
-    public String getXml() {
-        //TODO return proper representation object
-        throw new UnsupportedOperationException();
-    }
-
-    /**
-     * PUT method for updating or creating an instance of ServiceJeu
-     * @param content representation for the resource
-     */
+    
+    private Joueurs listJoueurs = new Joueurs();
+    private Parties listParties = new Parties();
+    
+    
+    // Inscription // Connexion
     @PUT
+    @Path("inscription")
     @Consumes(MediaType.APPLICATION_XML)
-    public void putXml(String content) {
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    public Joueur inscription(JAXBElement<Joueur> j) {
+        // ajouter condition 3 ème tier et ajout 
+        Joueur joueur = j.getValue();
+        joueur.setConnecte(true);
+        listJoueurs.liste.add(joueur);
+              
+        return joueur;
+    }
+    
+    @GET
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    public Joueur listerVilles() {
+        return new Joueur("test", "test");
     }
 }

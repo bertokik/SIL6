@@ -13,15 +13,19 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement(name = "Joueur")
 public class Joueur {
+
     private String pseudo;
     private String password;
     private int score;
     private boolean connecte;
 
+    public Joueur() {
+    }
+
     public Joueur(String pseudo, String password) {
         this.pseudo = pseudo;
         this.password = password;
-        this.connecte = true;
+        this.connecte = false;
         this.score = 0;
     }
 
@@ -33,8 +37,6 @@ public class Joueur {
         this.score = score;
     }
 
-    
-    
     public String getPseudo() {
         return pseudo;
     }
@@ -58,6 +60,5 @@ public class Joueur {
     public void setConnecte(boolean connecte) {
         this.connecte = connecte;
     }
-    
-    
+
 }
