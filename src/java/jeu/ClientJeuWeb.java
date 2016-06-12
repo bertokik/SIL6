@@ -88,11 +88,20 @@ public class ClientJeuWeb {
                 switch (rep) {
                     case "1":
                         Parties parties = listerParties();
-                        
+                        for (int i = 1; i < parties.liste.size() + 1 ;i++) {
+                            System.out.println(i+"- " +parties.liste.get(i-1).getNom());
+                        }
+                        System.out.print("Choisir le numéro de la partie à rejoindre (0 pour quitter) : ");
+                        rep = sc.nextLine();
+                        if ( rep.equals("0")) {
+                            
+                        }
                         break;
                     case "2":
                         Joueurs joueurs = listerJoueurs();
-                        
+                        for(int i = 0;i <joueurs.liste.size();i++) {
+                            System.out.println(joueurs.liste.get(i).getPseudo());
+                        }
                         break;
                     case "3":
                         boolean partieCree = false;
