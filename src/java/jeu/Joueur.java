@@ -18,6 +18,7 @@ public class Joueur {
     private String password;
     private int score;
     private boolean connecte;
+    private String message;
 
     public Joueur() {
     }
@@ -27,6 +28,7 @@ public class Joueur {
         this.password = password;
         this.connecte = false;
         this.score = 0;
+        this.message = "";
     }
 
     public int getScore() {
@@ -61,4 +63,13 @@ public class Joueur {
         this.connecte = connecte;
     }
 
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+    
+    
 }
