@@ -26,6 +26,7 @@ public class ServiceJeu {
     
     private Joueurs listJoueurs = new Joueurs();
     private Parties listParties = new Parties();
+    private Parties listPartiesLibre = new Parties();
     
     
     // Inscription // Connexion
@@ -47,7 +48,7 @@ public class ServiceJeu {
     @Path("listerParties")
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     public Parties listerParties() {
-        return listParties;
+        return listPartiesLibre;
     }
     
     // ListerJoueurs
@@ -74,7 +75,7 @@ public class ServiceJeu {
         }
         
         if (!exist) {
-            listParties.liste.add(partie);
+            listPartiesLibre.liste.add(partie);
         } else {
             
         }

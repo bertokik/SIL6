@@ -17,11 +17,13 @@ public class Partie {
     private String nom;
     private ArrayList<Joueur> listeJoueurs;
     private boolean attente;
+    private String message;
 
     public Partie(String unNom) {
         this.nom = unNom;
         listeJoueurs = new ArrayList<>();
         this.attente = true;
+        this.message = "";
     }
 
     public ArrayList<Joueur> getListeJoueurs() {
@@ -58,6 +60,14 @@ public class Partie {
 
     public void setNom(String nom) {
         this.nom = nom;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
     }
     
     
