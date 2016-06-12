@@ -82,4 +82,18 @@ public class ServiceJeu {
         
         return partie;
     }
+    
+    @PUT
+    @Path("deconnection")
+    @Consumes(MediaType.APPLICATION_XML)
+    public void deconnection(JAXBElement<Joueur> j) {
+        Joueur joueur = j.getValue();
+        
+        for (Joueur aJoueur : listJoueurs.liste) {
+            if (aJoueur.getPseudo().equals(joueur.getPseudo())) {
+                listJoueurs.liste.remove(aJoueur);
+                break;
+            }
+        }
+    }
 }
