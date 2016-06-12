@@ -41,9 +41,4 @@ public class ServiceJeu {
         return joueur;
     }
     
-    @GET
-    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public Joueur listerVilles() {
-        return new Joueur("test", "test");
-    }
 }

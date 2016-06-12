@@ -6,11 +6,13 @@
 package jeu;
 
 import java.util.ArrayList;
+import javax.xml.bind.annotation.XmlRootElement;
 
 /**
  *
  * @author FDC1
  */
+@XmlRootElement(name = "Partie")
 public class Partie {
     private ArrayList<Joueur> listeJoueurs;
     private boolean attente;
