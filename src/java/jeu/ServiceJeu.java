@@ -12,6 +12,7 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PUT;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.core.MediaType;
 import javax.xml.bind.JAXBElement;
 
@@ -41,4 +42,43 @@ public class ServiceJeu {
         return joueur;
     }
     
+    // ListerParties
+    @GET
+    @Path("listerParties")
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    public Parties listerParties() {
+        return listParties;
+    }
+    
+    // ListerJoueurs
+    @GET
+    @Path("listerJoueurs")
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    public Joueurs listerJoueurs() {
+        return listJoueurs;
+    }
+    
+    // creerPartie
+    @PUT
+    @Path("creerPartie")
+    @Consumes(MediaType.APPLICATION_XML)
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    public Partie creerPartie(JAXBElement<Partie> p) {
+        Partie partie = p.getValue();
+        boolean exist = false;
+        for (Partie unePartie : listParties.liste) {
+            if (unePartie.getNom().equals(partie.getNom())) {
+                exist = true;
+                break;
+            }
+        }
+        
+        if (!exist) {
+            listParties.liste.add(partie);
+        } else {
+            
+        }
+        
+        return partie;
+    }
 }

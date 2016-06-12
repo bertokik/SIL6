@@ -14,10 +14,12 @@ import javax.xml.bind.annotation.XmlRootElement;
  */
 @XmlRootElement(name = "Partie")
 public class Partie {
+    private String nom;
     private ArrayList<Joueur> listeJoueurs;
     private boolean attente;
 
-    public Partie(boolean attente) {
+    public Partie(String unNom) {
+        this.nom = unNom;
         listeJoueurs = new ArrayList<>();
         this.attente = true;
     }
@@ -48,6 +50,14 @@ public class Partie {
 
     public void setAttente(boolean attente) {
         this.attente = attente;
+    }
+
+    public String getNom() {
+        return nom;
+    }
+
+    public void setNom(String nom) {
+        this.nom = nom;
     }
     
     
