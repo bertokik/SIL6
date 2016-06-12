@@ -1,6 +1,7 @@
 package jeu;
 
 import java.io.StringReader;
+import java.util.Scanner;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
@@ -15,20 +16,68 @@ import javax.xml.transform.stream.StreamSource;
  */
 public class ClientJeuWeb {
 
-    private static WebTarget serviceMeteo = null;
+    private static WebTarget serviceJeu = null;
 
     public static void main(String args[]) throws Exception {
-        Joueur joueur = new Joueur("Paul", "pass");
 
         /*
        ** Initialisation du stub pour interagir avec le service web REST
          */
-        serviceMeteo = ClientBuilder.newClient().target("http://localhost:8080/Projet_SIL06");
+        serviceJeu = ClientBuilder.newClient().target("http://localhost:8080/Projet_SIL06");
 
-        System.out.println("Connecté : " + joueur.isConnecte());
+        boolean jeuConnexion = true;
+        boolean connect = false;
+         
+//        Interface de connexion
+        while (jeuConnexion) {
+            
+            
+            System.out.println("----------------------------------");
+            System.out.println("|           Bonjour              |");
+            System.out.println("----------------------------------");
+            System.out.println("|       1- Se connecter          |");
+            System.out.println("|       2- S'inscrire            |");
+            System.out.println("|       3- Quitter               |");
+            System.out.println("----------------------------------");
+            System.out.print("Entrez une réponse : ");
+            Scanner sc = new Scanner(System.in);
+            String rep = sc.nextLine();
 
-        joueur = inscription(joueur);
-        System.out.println("Connecté : " + joueur.isConnecte());
+            switch (rep) {
+                case "1":
+                    connect = true;
+                    break;
+                case "2":
+                    connect = true;
+                    break;
+                case "3":
+                    jeuConnexion = false;
+                    break;
+                default:
+                    System.out.println("Ceci n'est pas une réponse valable");
+            }
+
+            if (connect) {
+                System.out.print("Entrez votre pseudo : ");
+                String pseudo = sc.nextLine();
+                System.out.print("Entrez votre mot de passe : ");
+                String mdp = sc.nextLine();
+
+                Joueur joueur = new Joueur(pseudo, mdp);
+
+                joueur = inscription(joueur);
+                if (joueur.isConnecte()) {
+                    System.out.println("Vous êtes bien connecté");
+                }
+                connect = joueur.isConnecte();
+                jeuConnexion = true;
+            }
+            
+            while (connect) {                
+                
+            }
+        }
+
     }
 
     private static Joueur inscription(Joueur joueur) throws Exception {
@@ -41,7 +90,7 @@ public class ClientJeuWeb {
         context = JAXBContext.newInstance(Joueur.class);
         unmarshaller = context.createUnmarshaller();
 
-        reponse = serviceMeteo.path("inscription").request().put(Entity.xml(joueur)).readEntity(String.class);
+        reponse = serviceJeu.path("inscription").request().put(Entity.xml(joueur)).readEntity(String.class);
 
         xmlStr = new StringBuffer(reponse);
         root = unmarshaller.unmarshal(new StreamSource(new StringReader(xmlStr.toString())), Joueur.class);
