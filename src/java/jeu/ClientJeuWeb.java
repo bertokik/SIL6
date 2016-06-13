@@ -125,6 +125,7 @@ public class ClientJeuWeb {
                         break;
                     case "4":
                         deconnection(joueur);
+                        connect = false;
                         break;
                     default:
                         System.out.println("Ceci n'est pas une réponse valable");
