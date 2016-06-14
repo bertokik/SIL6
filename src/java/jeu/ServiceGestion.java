@@ -13,5 +13,6 @@ import java.rmi.RemoteException;
  * @author FDC1
  */
 public interface ServiceGestion extends Remote {
-    public Joueur donnerJoueur(String pseudo) throws RemoteException;  
+    public Joueur inscription(String pseudo, String password) throws RemoteException;
+    public Joueur authentification(String pseudo, String password) throws RemoteException;
 }

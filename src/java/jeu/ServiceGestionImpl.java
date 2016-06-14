@@ -17,32 +17,67 @@ import java.util.ArrayList;
  */
 public class ServiceGestionImpl implements ServiceGestion {
 
-    private ArrayList<Joueur> listeJoueurs = new ArrayList<>();
-    
+    private Joueurs listeJoueurs = new Joueurs();
+
     @Override
-    public Joueur donnerJoueur(String pseudo) throws RemoteException {
-        Joueur joueur = new Joueur();
-        for(int i = 0 ; i < listeJoueurs.size();i++) {
-            if(pseudo.equals(listeJoueurs.get(i).getPseudo())) {
-                joueur = listeJoueurs.get(i);
-            } 
+    public Joueur inscription(String pseudo, String password) throws RemoteException {
+        Joueur joueur;
+        boolean nouveau = true;
+        int i = 0;
+
+        while (i < listeJoueurs.liste.size() && nouveau) {
+            if (pseudo.equals(listeJoueurs.liste.get(i).getPseudo())) {
+                nouveau = false;
+            }
+            i++;
+        }
+
+        if (!nouveau) {
+            joueur = new Joueur();
+            joueur.setMessage("Le joueur existe déjà");
+        } else {
+            joueur = new Joueur(pseudo, password);
+            listeJoueurs.liste.add(joueur);
         }
         return joueur;
     }
-    
-    public static void main(String [] args) throws Exception
-    {
+
+    @Override
+    public Joueur authentification(String pseudo, String password) throws RemoteException {
+        Joueur joueur = new Joueur();
+        boolean trouve = false;
+        int i = 0;
+
+        while (i < listeJoueurs.liste.size() && !trouve) {
+            if (pseudo.equals(listeJoueurs.liste.get(i).getPseudo())) {
+                trouve = true;
+                if (password.equals(listeJoueurs.liste.get(i).getPassword())) {
+                    joueur = listeJoueurs.liste.get(i);
+                } else {
+                    joueur.setMessage("Mauvais mot de passe");
+                }
+            }
+            i++;
+        }
+
+        if (!trouve) {
+            joueur.setMessage("Ce joueur n'existe pas");
+        }
+
+        return joueur;
+    }
+
+    public static void main(String[] args) throws Exception {
         ServiceGestionImpl service = new ServiceGestionImpl();
-        
+
         ServiceGestion stub;
-        
-        stub = (ServiceGestion) UnicastRemoteObject.exportObject(service,0);
-     
+
+        stub = (ServiceGestion) UnicastRemoteObject.exportObject(service, 0);
+
         Registry registry = LocateRegistry.createRegistry(2000);
         registry.bind("PlayerList", stub);
-        
-        
+
         System.out.println("Serveur de données en route");
     }
-    
+
 }

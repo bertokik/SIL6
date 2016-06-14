@@ -27,6 +27,7 @@ public class ClientJeuWeb {
 
         boolean jeuConnexion = true;
         boolean connect = false;
+        boolean inscript = false;
         Joueur joueur = null;
 
 //        Interface de connexion
@@ -48,7 +49,7 @@ public class ClientJeuWeb {
                     connect = true;
                     break;
                 case "2":
-                    connect = true;
+                    inscript = true;
                     break;
                 case "3":
                     jeuConnexion = false;
@@ -65,15 +66,32 @@ public class ClientJeuWeb {
 
                 joueur = new Joueur(pseudo, mdp);
 
-                joueur = inscription(joueur);
+                joueur = authentification(joueur);
                 if (joueur.isConnecte()) {
                     System.out.println("Vous êtes bien connecté");
+                    jeuConnexion = true;
+                } else {
+                    System.out.println(joueur.getMessage());
                 }
-                connect = joueur.isConnecte();
-                jeuConnexion = true;
+            } else if (inscript) {
+                System.out.print("Entrez votre pseudo : ");
+                String pseudo = sc.nextLine();
+                System.out.print("Entrez votre mot de passe : ");
+                String mdp = sc.nextLine();
+
+                joueur = new Joueur(pseudo, mdp);
+
+                joueur = inscription(joueur);
+                if (joueur.isConnecte()) {
+                    System.out.println("Vous êtes bien inscrit");
+                    jeuConnexion = true;
+                } else {
+                    System.out.println(joueur.getMessage());
+                }
+              
             }
 //            Interface d'accueil
-            while (connect) {
+            while (joueur.isConnecte()) {
                 System.out.println("");
                 System.out.println("Bonjour " + joueur.getPseudo() + "      Score : " + joueur.getScore());
                 System.out.println("-----------------------------------------");
@@ -88,18 +106,18 @@ public class ClientJeuWeb {
                 switch (rep) {
                     case "1":
                         Parties parties = listerParties();
-                        for (int i = 1; i < parties.liste.size() + 1 ;i++) {
-                            System.out.println(i+"- " +parties.liste.get(i-1).getNom());
+                        for (int i = 1; i < parties.liste.size() + 1; i++) {
+                            System.out.println(i + "- " + parties.liste.get(i - 1).getNom());
                         }
                         System.out.print("Choisir le numéro de la partie à rejoindre (0 pour quitter) : ");
                         rep = sc.nextLine();
-                        if ( rep.equals("0")) {
-                            
+                        if (rep.equals("0")) {
+
                         }
                         break;
                     case "2":
                         Joueurs joueurs = listerJoueurs();
-                        for(int i = 0;i <joueurs.liste.size();i++) {
+                        for (int i = 0; i < joueurs.liste.size(); i++) {
                             System.out.println(joueurs.liste.get(i).getPseudo());
                         }
                         break;
@@ -116,9 +134,7 @@ public class ClientJeuWeb {
                                 System.out.println(partie.getMessage());
                             } else {
                                 partieCree = true;
-                                
-                                
-                                
+
                             }
                         }
 
@@ -147,6 +163,24 @@ public class ClientJeuWeb {
         unmarshaller = context.createUnmarshaller();
 
         reponse = serviceJeu.path("inscription").request().put(Entity.xml(joueur)).readEntity(String.class);
+
+        xmlStr = new StringBuffer(reponse);
+        root = unmarshaller.unmarshal(new StreamSource(new StringReader(xmlStr.toString())), Joueur.class);
+
+        return root.getValue();
+    }
+
+    private static Joueur authentification(Joueur joueur) throws Exception {
+        String reponse;
+        StringBuffer xmlStr;
+        JAXBContext context;
+        JAXBElement<Joueur> root;
+        Unmarshaller unmarshaller;
+
+        context = JAXBContext.newInstance(Joueur.class);
+        unmarshaller = context.createUnmarshaller();
+
+        reponse = serviceJeu.path("authentification").request().put(Entity.xml(joueur)).readEntity(String.class);
 
         xmlStr = new StringBuffer(reponse);
         root = unmarshaller.unmarshal(new StreamSource(new StringReader(xmlStr.toString())), Joueur.class);

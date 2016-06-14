@@ -5,6 +5,8 @@
  */
 package jeu;
 
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.Produces;
@@ -34,12 +36,45 @@ public class ServiceJeu {
     @Path("inscription")
     @Consumes(MediaType.APPLICATION_XML)
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public Joueur inscription(JAXBElement<Joueur> j) {
-        // ajouter condition 3 ème tier et ajout 
-        Joueur joueur = j.getValue();
-        joueur.setConnecte(true);
-        listJoueurs.liste.add(joueur);
-              
+    public Joueur inscription(JAXBElement<Joueur> j) throws Exception  {
+        // ajouter condition 3 ème tier et ajout
+        Registry registry = LocateRegistry.getRegistry("127.0.0.1",2000);
+        ServiceGestion service;
+        service = (ServiceGestion)registry.lookup("PlayerList");
+        
+        Joueur joueur = service.inscription(j.getValue().getPseudo(), j.getValue().getPassword());
+        
+        if (!joueur.getMessage().equals("")) {
+//            System.out.println(joueur.getMessage());
+            joueur.setConnecte(false);
+        } else {
+            joueur.setConnecte(true);
+            listJoueurs.liste.add(joueur);
+        }
+//        Joueur joueur = j.getValue();  
+        return joueur;
+    }
+    
+    @PUT
+    @Path("authentification")
+    @Consumes(MediaType.APPLICATION_XML)
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    public Joueur authentification(JAXBElement<Joueur> j) throws Exception  {
+        // ajouter condition 3 ème tier et ajout
+        Registry registry = LocateRegistry.getRegistry("127.0.0.1",2000);
+        ServiceGestion service;
+        service = (ServiceGestion)registry.lookup("PlayerList");
+        
+        Joueur joueur = service.authentification(j.getValue().getPseudo(), j.getValue().getPassword());
+        
+        if (!joueur.getMessage().equals("")) {
+//            System.out.println(joueur.getMessage());
+            joueur.setConnecte(false);
+        } else {
+            joueur.setConnecte(true);
+            listJoueurs.liste.add(joueur);
+        }
+//        Joueur joueur = j.getValue();  
         return joueur;
     }
     
