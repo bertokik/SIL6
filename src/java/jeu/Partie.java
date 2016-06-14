@@ -18,6 +18,9 @@ public class Partie {
     private ArrayList<Joueur> listeJoueurs;
     private boolean attente;
     private String message;
+    
+    public Partie() {
+    }
 
     public Partie(String unNom) {
         this.nom = unNom;

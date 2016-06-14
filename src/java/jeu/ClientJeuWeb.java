@@ -134,7 +134,6 @@ public class ClientJeuWeb {
                                 System.out.println(partie.getMessage());
                             } else {
                                 partieCree = true;
-
                             }
                         }
 
