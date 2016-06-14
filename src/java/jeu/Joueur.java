@@ -5,6 +5,7 @@
  */
 package jeu;
 
+import java.io.Serializable;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
@@ -12,7 +13,7 @@ import javax.xml.bind.annotation.XmlRootElement;
  * @author FDC1
  */
 @XmlRootElement(name = "Joueur")
-public class Joueur {
+public class Joueur implements Serializable{
 
     private String pseudo;
     private String password;
