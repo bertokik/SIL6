@@ -25,25 +25,24 @@ import javax.xml.bind.JAXBElement;
  */
 @Path("/")
 public class ServiceJeu {
-    
-    private Joueurs listJoueurs = new Joueurs();
-    private Parties listParties = new Parties();
-    private Parties listPartiesLibre = new Parties();
-    
-    
+
+    private static final Joueurs listJoueurs = new Joueurs();
+    private static final Parties listParties = new Parties();
+    private static final Parties listPartiesLibre = new Parties();
+
     // Inscription // Connexion
     @PUT
     @Path("inscription")
     @Consumes(MediaType.APPLICATION_XML)
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public Joueur inscription(JAXBElement<Joueur> j) throws Exception  {
+    public Joueur inscription(JAXBElement<Joueur> j) throws Exception {
         // ajouter condition 3 ème tier et ajout
-        Registry registry = LocateRegistry.getRegistry("127.0.0.1",2000);
+        Registry registry = LocateRegistry.getRegistry("127.0.0.1", 2000);
         ServiceGestion service;
-        service = (ServiceGestion)registry.lookup("PlayerList");
-        
+        service = (ServiceGestion) registry.lookup("PlayerList");
+
         Joueur joueur = service.inscription(j.getValue().getPseudo(), j.getValue().getPassword());
-        
+
         if (!joueur.getMessage().equals("")) {
 //            System.out.println(joueur.getMessage());
             joueur.setConnecte(false);
@@ -54,30 +53,31 @@ public class ServiceJeu {
 //        Joueur joueur = j.getValue();  
         return joueur;
     }
-    
+
     @PUT
     @Path("authentification")
     @Consumes(MediaType.APPLICATION_XML)
     @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
-    public Joueur authentification(JAXBElement<Joueur> j) throws Exception  {
+    public Joueur authentification(JAXBElement<Joueur> j) throws Exception {
         // ajouter condition 3 ème tier et ajout
-        Registry registry = LocateRegistry.getRegistry("127.0.0.1",2000);
+        Registry registry = LocateRegistry.getRegistry("127.0.0.1", 2000);
         ServiceGestion service;
-        service = (ServiceGestion)registry.lookup("PlayerList");
-        
+        service = (ServiceGestion) registry.lookup("PlayerList");
+
         Joueur joueur = service.authentification(j.getValue().getPseudo(), j.getValue().getPassword());
-        
+
         if (!joueur.getMessage().equals("")) {
 //            System.out.println(joueur.getMessage());
             joueur.setConnecte(false);
         } else {
             joueur.setConnecte(true);
             listJoueurs.liste.add(joueur);
+
         }
 //        Joueur joueur = j.getValue();  
         return joueur;
     }
-    
+
     // ListerParties
     @GET
     @Path("listerParties")
@@ -85,7 +85,7 @@ public class ServiceJeu {
     public Parties listerParties() {
         return listPartiesLibre;
     }
-    
+
     // ListerJoueurs
     @GET
     @Path("listerJoueurs")
@@ -93,7 +93,7 @@ public class ServiceJeu {
     public Joueurs listerJoueurs() {
         return listJoueurs;
     }
-    
+
     // creerPartie
     @PUT
     @Path("creerPartie")
@@ -108,27 +108,34 @@ public class ServiceJeu {
                 break;
             }
         }
-        
+
         if (!exist) {
             listPartiesLibre.liste.add(partie);
         } else {
-            
+
         }
-        
+
         return partie;
     }
-    
+
     @PUT
     @Path("deconnection")
     @Consumes(MediaType.APPLICATION_XML)
     public void deconnection(JAXBElement<Joueur> j) {
         Joueur joueur = j.getValue();
-        
+
         for (Joueur aJoueur : listJoueurs.liste) {
             if (aJoueur.getPseudo().equals(joueur.getPseudo())) {
                 listJoueurs.liste.remove(aJoueur);
                 break;
             }
         }
+    }
+    
+    // Affichage serveur
+    @GET
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    public String affichageServeur() {
+        return "<server>Vous êtes bien connecté au serveur</server>";
     }
 }

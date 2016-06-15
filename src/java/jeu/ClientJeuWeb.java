@@ -28,10 +28,15 @@ public class ClientJeuWeb {
         boolean jeuConnexion = true;
         boolean connect = false;
         boolean inscript = false;
-        Joueur joueur = null;
+        boolean estPartie = false;
+        Joueur joueur = new Joueur();
 
 //        Interface de connexion
         while (jeuConnexion) {
+            connect = false;
+            inscript = false;
+            estPartie = false;
+            joueur.setConnecte(false);
 
             System.out.println("----------------------------------");
             System.out.println("|           Bonjour              |");
@@ -88,7 +93,7 @@ public class ClientJeuWeb {
                 } else {
                     System.out.println(joueur.getMessage());
                 }
-              
+
             }
 //            Interface d'accueil
             while (joueur.isConnecte()) {
@@ -111,12 +116,16 @@ public class ClientJeuWeb {
                         }
                         System.out.print("Choisir le numéro de la partie à rejoindre (0 pour quitter) : ");
                         rep = sc.nextLine();
-                        if (rep.equals("0")) {
-
+                        for (int i = 1; i < parties.liste.size() + 1; i++) {
+                            if (!rep.equals(Integer.toString(parties.liste.indexOf(parties.liste.get(i - 1))))) {
+                                estPartie = true;
+                                System.out.println("Vous rejoignez la partie : " + i+"- " + parties.liste.get(i-1).getNom());
+                            }
                         }
                         break;
                     case "2":
-                        Joueurs joueurs = listerJoueurs();
+                        Joueurs joueurs = new Joueurs();
+                        joueurs = listerJoueurs();
                         for (int i = 0; i < joueurs.liste.size(); i++) {
                             System.out.println(joueurs.liste.get(i).getPseudo());
                         }
@@ -141,6 +150,7 @@ public class ClientJeuWeb {
                     case "4":
                         deconnection(joueur);
                         connect = false;
+                        joueur.setConnecte(false);
                         break;
                     default:
                         System.out.println("Ceci n'est pas une réponse valable");
@@ -216,6 +226,7 @@ public class ClientJeuWeb {
         unmarshaller = context.createUnmarshaller();
 
         reponse = serviceJeu.path("listerJoueurs").request().get(String.class);
+//        reponse = serviceJeu.request().get(String.class);
 
         xmlStr = new StringBuffer(reponse);
         root = unmarshaller.unmarshal(new StreamSource(new StringReader(xmlStr.toString())), Joueurs.class);
