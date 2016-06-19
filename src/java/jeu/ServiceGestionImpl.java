@@ -5,11 +5,19 @@
  */
 package jeu;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -21,8 +29,9 @@ public class ServiceGestionImpl implements ServiceGestion {
 
     @Override
     public Joueur inscription(String pseudo, String password) throws RemoteException {
-        Joueur joueur;
+        Joueur joueur = new Joueur();
         boolean nouveau = true;
+        ObjectOutputStream oos = null;
         int i = 0;
 
         while (i < listeJoueurs.liste.size() && nouveau) {
@@ -33,11 +42,31 @@ public class ServiceGestionImpl implements ServiceGestion {
         }
 
         if (!nouveau) {
-            joueur = new Joueur();
             joueur.setMessage("Le joueur existe déjà");
         } else {
-            joueur = new Joueur(pseudo, password);
-            listeJoueurs.liste.add(joueur);
+            // Sauvegarder l'objet dans un fichier
+            File fichier = new File("C:\\Users\\FDC1\\Documents\\NetBeansProjects\\ProjetSIL06\\src\\jeu\\joueurs.ser");
+
+//            try {
+//                // ouverture d'un flux sur un fichier
+//                oos = new ObjectOutputStream(new FileOutputStream(fichier));
+                joueur = new Joueur(pseudo, password);
+                listeJoueurs.liste.add(joueur);
+//                // sérialization de l'objet
+//                oos.writeObject(joueur);
+//            } catch (IOException ex) {
+//                ex.printStackTrace();
+//            } finally {
+//                try {
+//                    if (oos != null) {
+//                        oos.flush();
+//                        oos.close();
+//                    }
+//                } catch (IOException ex) {
+//                    ex.printStackTrace();
+//                }
+//            }
+
         }
         return joueur;
     }
@@ -71,11 +100,31 @@ public class ServiceGestionImpl implements ServiceGestion {
         ServiceGestionImpl service = new ServiceGestionImpl();
 
         ServiceGestion stub;
+        ObjectInputStream ois = null;
 
         stub = (ServiceGestion) UnicastRemoteObject.exportObject(service, 0);
 
         Registry registry = LocateRegistry.createRegistry(2000);
         registry.bind("PlayerList", stub);
+
+//         Récupération des objets sérializés
+//        try {
+//            final FileInputStream fichier = new FileInputStream("C:\\Users\\FDC1\\Documents\\NetBeansProjects\\ProjetSIL06\\src\\jeu\\joueurs.ser");
+//            ois = new ObjectInputStream(fichier);
+//            final Joueur joueur = (Joueur) ois.readObject();
+//            service.listeJoueurs.liste.add(joueur);
+//        } catch (IOException ex) {
+//            ex.printStackTrace();
+//        } finally {
+//            try {
+//                if(ois != null) {
+//                    ois.close();
+//                }
+//            } catch (IOException ex) {
+//                ex.printStackTrace();
+//            }
+//        }
+        
 
         System.out.println("Serveur de données en route");
     }

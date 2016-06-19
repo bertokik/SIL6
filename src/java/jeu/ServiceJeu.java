@@ -27,10 +27,11 @@ import javax.xml.bind.JAXBElement;
 public class ServiceJeu {
 
     private static final Joueurs listJoueurs = new Joueurs();
+    private static final Joueurs listJoueursPartie = new Joueurs();
     private static final Parties listParties = new Parties();
     private static final Parties listPartiesLibre = new Parties();
 
-    // Inscription // Connexion
+    // Inscription 
     @PUT
     @Path("inscription")
     @Consumes(MediaType.APPLICATION_XML)
@@ -53,7 +54,8 @@ public class ServiceJeu {
 //        Joueur joueur = j.getValue();  
         return joueur;
     }
-
+    
+// Connexion
     @PUT
     @Path("authentification")
     @Consumes(MediaType.APPLICATION_XML)
@@ -93,6 +95,79 @@ public class ServiceJeu {
     public Joueurs listerJoueurs() {
         return listJoueurs;
     }
+    
+    // Retourne l'etat de la partie
+    @PUT
+    @Path("getPartie")
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    public Partie getPartie(JAXBElement<Partie> p) {
+        Partie partie = p.getValue();
+        for(int i = 0; i < listParties.liste.size();i++) {
+            if (partie.getNom().equals(listParties.liste.get(i).getNom())) {
+               partie =  listParties.liste.get(i);
+            }
+        }
+        
+        return partie;
+    }
+    
+  
+    // Se connecter à une partie
+    @PUT
+    @Path("connexionPartie")
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    public Partie connexionPartie(JAXBElement<Partie> p) {
+        Partie partie = p.getValue();
+        // Récupérer la partie dans la liste de parties
+        for (int i=0; i < listParties.liste.size();i++) {
+            if (partie.getNom().equals(listParties.liste.get(i).getNom())) {
+                listParties.liste.set(i, partie);
+                // Si la partie est pleine, la retirer de la liste de parties libres
+                if (!partie.isAttente() && listPartiesLibre.liste.contains(partie)) {
+                    listPartiesLibre.liste.remove(partie);
+                }
+                
+            }
+        }
+        
+        return partie;
+    }
+    
+    // Quitter une partie
+    @PUT
+    @Path("quitterPartie")
+    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    public Partie quitterPartie(JAXBElement<Partie> p) {
+//        Joueur joueur = j.getValue();
+//        Partie partie = joueur.getPartieEnCours();
+//        partie.getListeJoueurs().liste.remove(joueur);
+        Partie partie = p.getValue();
+        boolean exist = false;
+        // Récupérer la partie dans la liste de parties
+        for (int i=0; i < listParties.liste.size();i++) {
+            if (partie.getNom().equals(listParties.liste.get(i).getNom())) {           
+                listParties.liste.set(i, partie);
+                // Si la partie n'est plus pleine, l'ajouter dans la liste de parties libres
+                if (partie.isAttente() && !listPartiesLibre.liste.contains(partie.getNom())) {
+                    for (Partie unePartie : listPartiesLibre.liste) {
+                        if (unePartie.getNom().equals(partie.getNom())) {
+                            exist = true;
+                        }
+                    }
+                    if (!exist) {
+                        listPartiesLibre.liste.add(partie);
+                    } 
+                }
+                // Si il n'y a plus de joueurs supprimmer la partie
+                if (partie.getListeJoueurs().liste.isEmpty()) {
+                    listParties.liste.remove(partie);
+                    listPartiesLibre.liste.remove(partie);
+                }
+            }
+        }
+        
+        return partie;
+    }
 
     // creerPartie
     @PUT
@@ -105,15 +180,16 @@ public class ServiceJeu {
         for (Partie unePartie : listParties.liste) {
             if (unePartie.getNom().equals(partie.getNom())) {
                 exist = true;
+                partie.setMessage("Une partie de même nom existe déjà");
                 break;
             }
         }
 
         if (!exist) {
             listPartiesLibre.liste.add(partie);
-        } else {
-
-        }
+            listParties.liste.add(partie);
+            
+        } 
 
         return partie;
     }

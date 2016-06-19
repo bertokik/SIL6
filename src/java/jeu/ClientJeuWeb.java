@@ -1,6 +1,7 @@
 package jeu;
 
 import java.io.StringReader;
+import static java.lang.Thread.sleep;
 import java.util.Scanner;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
@@ -29,74 +30,83 @@ public class ClientJeuWeb {
         boolean connect = false;
         boolean inscript = false;
         boolean estPartie = false;
+        boolean accueil = false;
         Joueur joueur = new Joueur();
-
+        Partie partie = new Partie();
+        Scanner sc = new Scanner(System.in);
+        String rep;
+        boolean jeu = true;
+        while (jeu) {
 //        Interface de connexion
-        while (jeuConnexion) {
-            connect = false;
-            inscript = false;
-            estPartie = false;
-            joueur.setConnecte(false);
+            while (jeuConnexion) {
+                connect = false;
+                inscript = false;
+                estPartie = false;
+                joueur.setConnecte(false);
 
-            System.out.println("----------------------------------");
-            System.out.println("|           Bonjour              |");
-            System.out.println("----------------------------------");
-            System.out.println("|       1- Se connecter          |");
-            System.out.println("|       2- S'inscrire            |");
-            System.out.println("|       3- Quitter               |");
-            System.out.println("----------------------------------");
-            System.out.print("Entrez une réponse : ");
-            Scanner sc = new Scanner(System.in);
-            String rep = sc.nextLine();
+                System.out.println("----------------------------------");
+                System.out.println("|           Bonjour              |");
+                System.out.println("----------------------------------");
+                System.out.println("|       1- Se connecter          |");
+                System.out.println("|       2- S'inscrire            |");
+                System.out.println("|       3- Quitter               |");
+                System.out.println("----------------------------------");
+                System.out.print("Entrez une réponse : ");
+                rep = sc.nextLine();
 
-            switch (rep) {
-                case "1":
-                    connect = true;
-                    break;
-                case "2":
-                    inscript = true;
-                    break;
-                case "3":
-                    jeuConnexion = false;
-                    break;
-                default:
-                    System.out.println("Ceci n'est pas une réponse valable");
-            }
-
-            if (connect) {
-                System.out.print("Entrez votre pseudo : ");
-                String pseudo = sc.nextLine();
-                System.out.print("Entrez votre mot de passe : ");
-                String mdp = sc.nextLine();
-
-                joueur = new Joueur(pseudo, mdp);
-
-                joueur = authentification(joueur);
-                if (joueur.isConnecte()) {
-                    System.out.println("Vous êtes bien connecté");
-                    jeuConnexion = true;
-                } else {
-                    System.out.println(joueur.getMessage());
+                switch (rep) {
+                    case "1":
+                        connect = true;
+                        break;
+                    case "2":
+                        inscript = true;
+                        break;
+                    case "3":
+                        jeuConnexion = false;
+                        jeu = false;
+                        break;
+                    default:
+                        System.out.println("Ceci n'est pas une réponse valable");
                 }
-            } else if (inscript) {
-                System.out.print("Entrez votre pseudo : ");
-                String pseudo = sc.nextLine();
-                System.out.print("Entrez votre mot de passe : ");
-                String mdp = sc.nextLine();
 
-                joueur = new Joueur(pseudo, mdp);
+                if (connect) {
+                    System.out.print("Entrez votre pseudo : ");
+                    String pseudo = sc.nextLine();
+                    System.out.print("Entrez votre mot de passe : ");
+                    String mdp = sc.nextLine();
 
-                joueur = inscription(joueur);
-                if (joueur.isConnecte()) {
-                    System.out.println("Vous êtes bien inscrit");
-                    jeuConnexion = true;
-                } else {
-                    System.out.println(joueur.getMessage());
+                    joueur = new Joueur(pseudo, mdp);
+
+                    joueur = authentification(joueur);
+                    if (joueur.isConnecte()) {
+                        System.out.println("Vous êtes bien connecté");
+                        jeuConnexion = false;
+                        accueil = joueur.isConnecte();
+                    } else {
+                        System.out.println(joueur.getMessage());
+                    }
+                } else if (inscript) {
+                    System.out.print("Entrez votre pseudo : ");
+                    String pseudo = sc.nextLine();
+                    System.out.print("Entrez votre mot de passe : ");
+                    String mdp = sc.nextLine();
+
+                    joueur = new Joueur(pseudo, mdp);
+
+                    joueur = inscription(joueur);
+                    if (joueur.isConnecte()) {
+                        System.out.println("Vous êtes bien inscrit");
+                        jeuConnexion = false;
+                        accueil = joueur.isConnecte();
+                    } else {
+                        System.out.println(joueur.getMessage());
+                    }
+
                 }
 
             }
 //            Interface d'accueil
-            while (joueur.isConnecte()) {
+            while (accueil) {
                 System.out.println("");
                 System.out.println("Bonjour " + joueur.getPseudo() + "      Score : " + joueur.getScore());
                 System.out.println("-----------------------------------------");
@@ -111,21 +121,29 @@ public class ClientJeuWeb {
                 switch (rep) {
                     case "1":
                         Parties parties = listerParties();
+                        System.out.println("Liste des parties disponibles");
+                        System.out.println("-----------------------------");
                         for (int i = 1; i < parties.liste.size() + 1; i++) {
-                            System.out.println(i + "- " + parties.liste.get(i - 1).getNom());
+                            System.out.println(i + "- " + parties.liste.get(i - 1).getNom() + " " + parties.liste.get(i - 1).getListeJoueurs().liste.size() + "/6");
                         }
                         System.out.print("Choisir le numéro de la partie à rejoindre (0 pour quitter) : ");
                         rep = sc.nextLine();
                         for (int i = 1; i < parties.liste.size() + 1; i++) {
                             if (!rep.equals(Integer.toString(parties.liste.indexOf(parties.liste.get(i - 1))))) {
                                 estPartie = true;
-                                System.out.println("Vous rejoignez la partie : " + i+"- " + parties.liste.get(i-1).getNom());
+                                System.out.println("Vous rejoignez la partie : " + i + "- " + parties.liste.get(i - 1).getNom());
+                                partie = parties.liste.get(i - 1);
+                                partie.ajouterJoueur(joueur);
+                                partie = connexionPartie(partie);
+                                accueil = false;
                             }
                         }
                         break;
                     case "2":
                         Joueurs joueurs = new Joueurs();
                         joueurs = listerJoueurs();
+                        System.out.println("Liste des joueurs connectés");
+                        System.out.println("-----------------------------");
                         for (int i = 0; i < joueurs.liste.size(); i++) {
                             System.out.println(joueurs.liste.get(i).getPseudo());
                         }
@@ -135,14 +153,19 @@ public class ClientJeuWeb {
                         while (!partieCree) {
                             System.out.print("Entrez un nom de partie : ");
                             rep = sc.nextLine();
-                            Partie partie = new Partie(rep);
-                            partie.ajouterJoueur(joueur);
-                            partie = creerPartie(partie);
+                            partie = new Partie(rep);
 
                             if (partie.getNom().equals("")) {
-                                System.out.println(partie.getMessage());
+//                                System.out.println(partie.getMessage());
+                                System.out.println("Veuillez entre un nom de partie");
                             } else {
+                                partie.ajouterJoueur(joueur);
+//                                joueur.setPartieEnCours(partie);
+                                partie = creerPartie(partie);
+
                                 partieCree = true;
+                                estPartie = true;
+                                accueil = false;
                             }
                         }
 
@@ -150,15 +173,64 @@ public class ClientJeuWeb {
                     case "4":
                         deconnection(joueur);
                         connect = false;
+                        estPartie = false;
+                        accueil = false;
                         joueur.setConnecte(false);
+                        jeuConnexion = true;
                         break;
                     default:
                         System.out.println("Ceci n'est pas une réponse valable");
                 }
 
             }
-        }
+//            Interface d'attente de partie
+            while (estPartie && partie.isAttente()) {
 
+                System.out.println("Partie : " + partie.getNom());
+                System.out.println("------------------------------------------------");
+                System.out.println("Joueurs : ");
+                for (int i = 0; i < partie.getListeJoueurs().liste.size(); i++) {
+                    System.out.println(partie.getListeJoueurs().liste.get(i).getPseudo() + " Score : " + partie.getListeJoueurs().liste.get(i).getScore());
+                }
+                try {
+                    sleep(3000);
+                } catch (InterruptedException e) {
+                }
+                partie = getPartie(partie);
+                if (partie.isAttente()) {
+                    System.out.print("Voulez-vous quitter la partie ? (o/n)");
+                    rep = sc.nextLine();
+                    switch (rep) {
+                        case "o":
+                            estPartie = false;
+                            accueil = true;
+                            partie.retirerJoueur(joueur);
+                            partie = quitterPartie(partie);
+                            break;
+                        case "n":
+                            break;
+                        default:
+                            System.out.println("Ceci n'est pas une réponse valable");
+                    }
+
+                }
+
+            }
+
+//            Démarrage du jeu
+            while (!partie.isAttente()) {
+                System.out.println("Partie : " + partie.getNom());
+                System.out.println("------------------------------------------------");
+                System.out.println("Joueurs : ");
+                System.out.println("Le jeu va commencer dans 30 secondes");
+                try {
+                    sleep(30000);
+                } catch (InterruptedException e) {
+                }
+                partie.run();
+            }
+
+        }
     }
 
     private static Joueur inscription(Joueur joueur) throws Exception {
@@ -230,6 +302,63 @@ public class ClientJeuWeb {
 
         xmlStr = new StringBuffer(reponse);
         root = unmarshaller.unmarshal(new StreamSource(new StringReader(xmlStr.toString())), Joueurs.class);
+
+        return root.getValue();
+    }
+
+    private static Partie connexionPartie(Partie partie) throws Exception {
+        String reponse;
+        StringBuffer xmlStr;
+        JAXBContext context;
+        JAXBElement<Partie> root;
+        Unmarshaller unmarshaller;
+
+        context = JAXBContext.newInstance(Partie.class);
+        unmarshaller = context.createUnmarshaller();
+
+        reponse = serviceJeu.path("connexionPartie").request().put(Entity.xml(partie)).readEntity(String.class);
+//        reponse = serviceJeu.request().get(String.class);
+
+        xmlStr = new StringBuffer(reponse);
+        root = unmarshaller.unmarshal(new StreamSource(new StringReader(xmlStr.toString())), Partie.class);
+
+        return root.getValue();
+    }
+
+    private static Partie quitterPartie(Partie partie) throws Exception {
+        String reponse;
+        StringBuffer xmlStr;
+        JAXBContext context;
+        JAXBElement<Partie> root;
+        Unmarshaller unmarshaller;
+
+        context = JAXBContext.newInstance(Partie.class);
+        unmarshaller = context.createUnmarshaller();
+
+        reponse = serviceJeu.path("quitterPartie").request().put(Entity.xml(partie)).readEntity(String.class);
+//        reponse = serviceJeu.request().get(String.class);
+
+        xmlStr = new StringBuffer(reponse);
+        root = unmarshaller.unmarshal(new StreamSource(new StringReader(xmlStr.toString())), Partie.class);
+
+        return root.getValue();
+    }
+
+    private static Partie getPartie(Partie partie) throws Exception {
+        String reponse;
+        StringBuffer xmlStr;
+        JAXBContext context;
+        JAXBElement<Partie> root;
+        Unmarshaller unmarshaller;
+
+        context = JAXBContext.newInstance(Partie.class);
+        unmarshaller = context.createUnmarshaller();
+
+        reponse = serviceJeu.path("getPartie").request().put(Entity.xml(partie)).readEntity(String.class);
+//        reponse = serviceJeu.request().get(String.class);
+
+        xmlStr = new StringBuffer(reponse);
+        root = unmarshaller.unmarshal(new StreamSource(new StringReader(xmlStr.toString())), Partie.class);
 
         return root.getValue();
     }

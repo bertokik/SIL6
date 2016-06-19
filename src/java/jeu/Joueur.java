@@ -6,6 +6,7 @@
 package jeu;
 
 import java.io.Serializable;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
@@ -15,21 +16,37 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement(name = "Joueur")
 public class Joueur implements Serializable{
 
+    
     private String pseudo;
     private String password;
     private int score;
     private boolean connecte;
     private String message;
+//    private Partie partieEnCours;
+
+//    public Partie getPartieEnCours() {
+//        return partieEnCours;
+//    }
+//
+//    public void setPartieEnCours(Partie partieEnCours) {
+//        this.partieEnCours = partieEnCours;
+//    }
+    
+    @XmlElement
+    private Cartes mainJoueur;
 
     public Joueur() {
+        mainJoueur = new Cartes();
     }
 
+    
     public Joueur(String pseudo, String password) {
         this.pseudo = pseudo;
         this.password = password;
         this.connecte = false;
         this.score = 0;
         this.message = "";
+        mainJoueur = new Cartes();
     }
 
     public int getScore() {
@@ -72,5 +89,20 @@ public class Joueur implements Serializable{
         this.message = message;
     }
     
+    public Cartes getMainJoueur() {
+        return mainJoueur;
+    }
+    
+    public void addCarte(Carte carte) {
+        mainJoueur.liste.add(carte);
+    }
+    
+    public void removeCarte(Carte carte) {
+        mainJoueur.liste.remove(carte);
+    }
+    
+    public void clearMain() {
+        mainJoueur.liste.clear();
+    }
     
 }
